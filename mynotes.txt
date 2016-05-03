@@ -1,0 +1,30 @@
+wget -P /etc/yum.repos.d/ http://download.gluster.org/pub/gluster/glusterfs/LATEST/RHEL/glusterfs-epel.repo
+
+rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+yum install glusterfs glusterfs-fuse glusterfs-server
+
+pvcreate /dev/vdb1
+vgcreate -n vg_data /dev/vdb1
+vgcreate vg_data /dev/vdb1
+lvcreate -l +100%FREE -n lv_data vg_data
+mkfs.xfs /dev/mapper/vg_data-lv_dat
+
+systemctl start glusterd.service
+
+gluster peer probe storage1
+gluster peer probe storage2
+gluster peer status
+gluster pool list
+gluster volume status
+
+mkdir /gluster
+
+gluster volume create openstack storage1:/gluster storage2:/gluster force
+
+gluster volume start openstack
+gluster volume status
+gluster volume info
+gluster volume status
+
+packstack --install-hosts=10.0.0.10,10.0.0.30,10.0.0.31 --cinder-backend=gluster --cinder-gluster-mounts=storage1:/openstack
