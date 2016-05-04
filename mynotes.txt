@@ -56,7 +56,7 @@ gluster volume info
 
 + Create stack user and sudo access 
 
-+ Install RDO Openstack (as stack user)
++ Install RDO Openstack (as stack user from contorller node)
 
 $ sudo yum install -y centos-release-openstack-mitaka
 $ sudo yum update -y
