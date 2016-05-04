@@ -61,5 +61,5 @@ gluster volume info
 $ sudo yum install -y centos-release-openstack-mitaka
 $ sudo yum update -y
 $ sudo yum install -y openstack-packstack
-$ packstack --install-hosts=10.0.0.10,10.0.0.30,10.0.0.31 --cinder-backend=gluster --cinder-gluster-mounts=storage1:/openstack
+$ packstack --install-hosts=10.0.0.10,10.0.0.11,10.0.0.12 --cinder-backend=gluster --cinder-gluster-mounts=storage1:/cinder
 
