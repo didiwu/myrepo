@@ -1,4 +1,9 @@
-Assign static IPs and hostname
++ Disable Network Manager
+
+# systemctl disable NetworkManager
+# systemctl stop NetworkManager
+
++ Assign static IPs and hostname
 
 # cat /etc/hostname
 storage1.localdomain
@@ -13,23 +18,26 @@ ONBOOT=yes
 IPADDR=172.168.0.21
 NETMASK=255.255.0.0
 NM_CONTROLLED=no
+# systemctl restart network
 
++ Disable firewalld
+# systemctl disable firewalld
+# systemctl stop firewalld
 
-Install GlusterFS
++ Install GlusterFS
 
-wget -P /etc/yum.repos.d/ http://download.gluster.org/pub/gluster/glusterfs/LATEST/RHEL/glusterfs-epel.repo
-
+wget -P /etc/yum.repos.d/ http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-
 yum install glusterfs glusterfs-fuse glusterfs-server
+systemctl start glusterd.service
+
++ Prepare disks where the gluster volumes will reside and create gluster volumes
 
 pvcreate /dev/vdb1
 vgcreate -n vg_data /dev/vdb1
 vgcreate vg_data /dev/vdb1
 lvcreate -l +100%FREE -n lv_data vg_data
 mkfs.xfs /dev/mapper/vg_data-lv_dat
-
-systemctl start glusterd.service
 
 gluster peer probe storage1
 gluster peer probe storage2
@@ -44,10 +52,9 @@ gluster volume create openstack storage1:/gluster storage2:/gluster force
 gluster volume start openstack
 gluster volume status
 gluster volume info
-gluster volume status
 
 
-Install RDO Openstack
++ Install RDO Openstack
 
 packstack --install-hosts=10.0.0.10,10.0.0.30,10.0.0.31 --cinder-backend=gluster --cinder-gluster-mounts=storage1:/openstack
 
