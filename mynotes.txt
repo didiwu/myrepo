@@ -1,4 +1,22 @@
-#
+Assign static IPs and hostname
+
+# cat /etc/hostname
+storage1.localdomain
+# cat /etc/sysconfig/network
+HOSTNAME=storage1
+GATEWAY=172.168.0.2
+TYPE=Ethernet
+BOOTPROTO=static
+NAME=eth0
+DEVICE=eth0
+ONBOOT=yes
+IPADDR=172.168.0.21
+NETMASK=255.255.0.0
+NM_CONTROLLED=no
+
+
+Install GlusterFS
+
 wget -P /etc/yum.repos.d/ http://download.gluster.org/pub/gluster/glusterfs/LATEST/RHEL/glusterfs-epel.repo
 
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -28,4 +46,8 @@ gluster volume status
 gluster volume info
 gluster volume status
 
+
+Install RDO Openstack
+
 packstack --install-hosts=10.0.0.10,10.0.0.30,10.0.0.31 --cinder-backend=gluster --cinder-gluster-mounts=storage1:/openstack
+
