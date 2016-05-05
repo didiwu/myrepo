@@ -10,7 +10,7 @@ storage1.localdomain
 # cat /etc/sysconfig/network
 HOSTNAME=storage1
 GATEWAY=172.168.0.2
-# cat /etc/sysconfig/networ-scripts/ifcfg-eth0
+# cat /etc/sysconfig/network-scripts/ifcfg-eth0
 TYPE=Ethernet
 BOOTPROTO=static
 NAME=eth0
