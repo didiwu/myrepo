@@ -63,3 +63,48 @@ $ sudo yum update -y
 $ sudo yum install -y openstack-packstack
 $ packstack --install-hosts=10.0.0.10,10.0.0.11,10.0.0.12 --cinder-backend=gluster --cinder-gluster-mounts=storage1:/cinder
 
++ Remove existing default routes and networks
+
++ Create new public and private networks and routes
+
+# cat /etc/sysconfig/network-scripts/ifcfg-br-ex
+DEVICE=br-ex
+DEVICETYPE=ovs
+TYPE=OVSBridge
+BOOTPROTO=static
+IPADDR=192.168.0.10
+NETMASK=255.255.0.0
+GATEWAY=192.168.0.2
+DNS1=192.168.0.1
+ONBOOT=ye
+
+# cat /etc/sysconfig/network-scripts/ifcfg-eth2
+DEVICE=eth2
+TYPE=OVSPort
+DEVICETYPE=ovs
+OVS_BRIDGE=br-ex
+ONBOOT=yes
+
+# systemctl restart network
+
+# cat /etc/neutron/plugins/ml2/ml2_conf.ini | grep type_drivers
+type_drivers = vxlan, flat
+
+# systemctl restart neutron-server.service
+
+# . keystonerc_admin
+
+# neutron net-create external_network --provider:network_type flat --provider:physical_network extnet  --router:external
+
+# neutron subnet-create --name public_subnet --enable_dhcp=False --allocation-pool=start=192.168.0.100,end=192.168.0.200 --gateway=192.168.0.2 external_network 192.168.0.0/16
+
+# neutron router-create router1
+
+# neutron router-gateway-set router1 external_network
+
+# neutron net-create private_network
+
+# neutron subnet-create --name private_subnet private_network 172.16.100.0/24
+
+# neutron router-interface-add router1 private_subnet
+
