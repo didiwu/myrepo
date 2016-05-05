@@ -108,3 +108,27 @@ type_drivers = vxlan, flat
 
 # neutron router-interface-add router1 private_subnet
 
+
++ Configure glance image to use GlusterFS
+
+On one of the storage node:
+# gluster vol set glance storage.owner-uid 161
+# gluster vol set glance storage.owner-gid 161
+
+On OpenStack controller node:
+# systemctl stop openstack-glance-api.service
+# systemctl stop openstack-glance-registry.service
+# mv /var/lib/glance/images /var/lib/glance/images.old
+# mkdir /var/lib/glance/images
+# wget -P /etc/yum.repos.d/ http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
+# yum install glusterfs glusterfs-fuse
+# cat /etc/fstab
+storage1:/glance        /var/lib/glance/images  glusterfs       defaults,_netdev 0 0
+# mount -a
+# chown glance:glance /var/lib/glance/images
+# chmod 750 /var/lib/glance/images
+# systemctl start openstack-glance-api.service
+# systemctl start openstack-glance-registry.service
+
+Download an image and upload it to glance:
+# glance image-create --property name=centos7 --property is-public=true --container-format bare --disk-format qcow2 < CentOS-7-x86_64-GenericCloud.qcow2
