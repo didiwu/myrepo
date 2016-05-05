@@ -132,3 +132,8 @@ storage1:/glance        /var/lib/glance/images  glusterfs       defaults,_netdev
 
 Download an image and upload it to glance:
 # glance image-create --property name=centos7 --property is-public=true --container-format bare --disk-format qcow2 < CentOS-7-x86_64-GenericCloud.qcow2
+
++ Live migration
+# nova-manage service list
+# nova list
+# nova live-migration <VM_ID> <Hypervisor_hostname>
