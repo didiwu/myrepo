@@ -102,3 +102,10 @@ $ ceph-deploy osd create osd2:vdc:/dev/vdb1 osd2:vdd:/dev/vdb2 osd2:vde:/dev/vdb
 $ sudo cp ceph.client.admin.keyring /etc/ceph
 $ chmod 644 /etc/ceph/ceph.client.admin.keyring
 
++ Check the ceph status and increase pg_num and pgp_num as necessary
+$ ceph status
+$ ceph health
+pg_num should be between (no_of_OSDs * 20) and (no_of_OSDs * 32)
+$ ceph osd pool get rbd pg_num
+$ ceph osd pool set rbd pg_num 192
+$ ceph osd pool set rbd pgp_num 192
