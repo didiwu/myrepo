@@ -60,3 +60,34 @@ $ cat ceph.conf
 osd pool default size = 2
 public network = 10.0.0.0/16
 $ ceph-deploy install controller mon osd1 osd2
+$ ceph-deploy mon create-initial
+
++ Prepare the journal disk on osd nodes
+# parted -s /dev/vdb mklabel gpt
+# parted -s /dev/vdb mkpart primary 0% 33%
+# parted -s /dev/vdb mkpart primary 34% 66%
+# parted -s /dev/vdb mkpart primary 67% 100%
+
++ List and zap disks on osd nodes
+$ ceph-deploy disk list osd1
+$ ceph-deploy disk list osd2
+$ ceph-deploy disk zap osd1:vdc
+$ ceph-deploy disk zap osd1:vdd
+$ ceph-deploy disk zap osd1:vde
+$ ceph-deploy disk zap osd2:vdc
+$ ceph-deploy disk zap osd2:vdd
+$ ceph-deploy disk zap osd2:vde
+
+Due to some ceph bug, we have to manually change the ownership of the journal disk on each OSD nodes:
+# chown ceph /dev/vdb1
+# chown ceph /dev/vdb2
+# chown ceph /dev/vdb3
+
++ Create OSDs on osd nodes
+$ ceph-deploy osd create osd1:vdc:/dev/vdb1 osd1:vdd:/dev/vdb2 osd1:vde:/dev/vdb3
+$ ceph-deploy osd create osd2:vdc:/dev/vdb1 osd2:vdd:/dev/vdb2 osd2:vde:/dev/vdb3
+
++ Copy the ceph.client.admin.keyring to /etc/ceph
+$ sudo cp ceph.client.admin.keyring /etc/ceph
+$ chmod 644 /etc/ceph/ceph.client.admin.keyring
+
