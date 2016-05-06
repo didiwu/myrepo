@@ -68,6 +68,17 @@ $ ceph-deploy mon create-initial
 # parted -s /dev/vdb mkpart primary 34% 66%
 # parted -s /dev/vdb mkpart primary 67% 100%
 
++ Prepare the data disks on osd nodes
+# parted -s /dev/vdc mklabel gpt
+# parted -s /dev/vdc mkpart primary xfs 0% 100%
+# mkfs.xfs /dev/vdc -f
+# parted -s /dev/vdd mklabel gpt
+# parted -s /dev/vdd mkpart primary xfs 0% 100%
+# mkfs.xfs /dev/vdd -f
+# parted -s /dev/vde mklabel gpt
+# parted -s /dev/vde mkpart primary xfs 0% 100%
+# mkfs.xfs /dev/vde -f
+
 + List and zap disks on osd nodes
 $ ceph-deploy disk list osd1
 $ ceph-deploy disk list osd2
