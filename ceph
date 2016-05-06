@@ -1,0 +1,62 @@
++ Enable ceph repo and install ceph-deploy (controller/admin node)
+# cat /etc/yum.repos.d/ceph-deploy.repo
+[ceph-noarch]
+name=Ceph noarch packages
+baseurl=http://ceph.com/rpm-hammer/el7/noarch
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
+# yum -y install ceph-deploy
+
++ Enable NTP (all nodes)
+# yum install -y ntp
+# systemctl enable ntpd
+# systemctl start ntpd
+
++ Create ceph user and enable password-less login (all nodes)
+# useradd ceph
+# passwd ceph
+# echo "Defaults:ceph !requiretty\nceph ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ceph
+# chmod 440 /etc/sudoers.d/ceph
+# su - ceph
+$ ssh-keygen
+$ ssh-copy-id {mon/osd1/osd2}
+
++ Edit ceph .ssh/config file on controller/admin
+$ cat .ssh/config
+Host mon
+   Hostname mon
+   User ceph
+Host osd1
+   Hostname osd1
+   User ceph
+Host osd2
+   Hostname osd2
+   User ceph
+   
++ Enable firewall ports
+On mon node:
+# firewall-cmd --add-port=6789/tcp --permanent
+# firewall-cmd --reload
+
+On osd nodes:
+# firewall-cmd --add-port=6800-7100/tcp --permanent
+# firewall-cmd --reload
+
++ Disable selinux (all nodes)
+# cat /etc/selinux/config | grep SELINUX= | grep -v ^#
+SELINUX=disabled
+# setenforce 0
+
++ Enable yum-plugin-priorities
+# yum install -y yum-plugin-priorities
+
++ Create ceph cluster (run this as ceph on controller/admin node)
+$ mkdir my-clus
+$ cd my-cluster
+$ ceph-deploy new mon
+$ cat ceph.conf
+osd pool default size = 2
+public network = 10.0.0.0/16
+$ ceph-deploy install controller mon osd1 osd2
