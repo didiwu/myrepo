@@ -1,0 +1,141 @@
++ Install RDO Openstack by running packstack from contorller node
+
+# yum install -y centos-release-openstack-mitaka
+# yum update -y
+# yum install -y openstack-packstack
+# packstack --install-hosts=10.0.0.10,10.0.0.11,10.0.0.12 --nagios-install=n --provision-demo=n
+
++ Create storage pools
+$ ceph osd pool create volumes 128
+$ ceph osd pool create images 128
+$ ceph osd pool create backups 128
+$ ceph osd pool create vms 128
+
++ Configure Openstack ceph clients 
+# cp ceph.conf /etc/ceph/
+On glance node:
+# yum install python-rbd
+On cinder and compute nodes:
+# yum install ceph-common
+
++ Setup ceph client authentication
+Create a new user for Nova/Cinder and Glance:
+$ ceph auth get-or-create client.cinder mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images'
+$ ceph auth get-or-create client.glance mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=images'
+$ ceph auth get-or-create client.cinder-backup mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=backups'
+
+Add the keyrings for client.cinder, client.glance, and client.cinder-backup:
+$ ceph auth get-or-create client.glance | sudo tee /etc/ceph/ceph.client.glance.keyring
+$ sudo chown glance:glance /etc/ceph/ceph.client.glance.keyring
+$ ceph auth get-or-create client.cinder | sudo tee /etc/ceph/ceph.client.cinder.keyring
+$ sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
+$ ceph auth get-or-create client.cinder-backup | ssh sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+$ sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
+
+Add the keyring file for client.cinder to compute nodes:
+$ ceph auth get-or-create client.cinder | ssh root@compute1 tee /etc/ceph/ceph.client.cinder.keyring
+$ ceph auth get-or-create client.cinder | ssh root@compute2 tee /etc/ceph/ceph.client.cinder.keyring
+
+They also need to store the secret key of the client.cinder user in libvirt. The libvirt process needs it to access the cluster while attaching a block device from Cinder.
+Create a temporary copy of the secret key on the compute nodes:
+$ ceph auth get-key client.cinder | ssh root@compute1 tee client.cinder.key
+$ ceph auth get-key client.cinder | ssh root@compute2 tee client.cinder.key
+
+On each of the compute nodes, run the following:
+# uuidgen
+# cat > secret.xml <<EOF
+<secret ephemeral='no' private='no'>
+  <uuid>53280602-c782-4a5e-865e-83f88a39e0e3</uuid>
+  <usage type='ceph'>
+    <name>client.cinder secret</name>
+  </usage>
+</secret>
+EOF
+# virsh secret-define --file secret.xml
+# virsh secret-set-value --secret {secret_key} --base64 $(cat client.cinder.key) && rm client.cinder.key secret.xml
+
+
++ Comfigure Glance to use ceph
+Edit /etc/glance/glance-api.conf
+
+add under the [glance_store] section:
+default_store = rbd
+stores = rbd
+rbd_store_pool = images
+rbd_store_user = glance
+rbd_store_ceph_conf = /etc/ceph/ceph.conf
+rbd_store_chunk_size = 8
+
+add under the  [DEFAULT] section:
+show_image_direct_url = True
+
+# for i in openstack-glance-api.service openstack-glance-registry.service; do systemctl restart $i; done
+
++ Configure Cinder to use ceph
+Edit /etc/cinder/cinder.conf
+
+[DEFAULT]
+enabled_backends = ceph
+[ceph]
+volume_driver = cinder.volume.drivers.rbd.RBDDriver
+rbd_pool = volumes
+rbd_ceph_conf = /etc/ceph/ceph.conf
+rbd_flatten_volume_from_snapshot = false
+rbd_max_clone_depth = 5
+rbd_store_chunk_size = 4
+rados_connect_timeout = -1
+glance_api_version = 2
+rbd_user = cinder
+rbd_secret_uuid = {uuid generated earlier}
+
+Edit /etc/cinder/cinder.conf 
+
+backup_driver = cinder.backup.drivers.ceph
+backup_ceph_conf = /etc/ceph/ceph.conf
+backup_ceph_user = cinder-backup
+backup_ceph_chunk_size = 134217728
+backup_ceph_pool = backups
+backup_ceph_stripe_unit = 0
+backup_ceph_stripe_count = 0
+restore_discard_excess_bytes = true
+
+# for i in openstack-cinder-api.service openstack-cinder-backup.service openstack-cinder-scheduler.service openstack-cinder-volume.service; do systemctl restart $i; done
+
++ Configure Nova to use ceph
+On each compute nodes:
+Edit /etc/nova/nova.conf
+[libvirt]
+images_type = rbd
+images_rbd_pool = vms
+images_rbd_ceph_conf = /etc/ceph/ceph.conf
+disk_cachemodes="network=writeback"
+rbd_user = cinder
+rbd_secret_uuid = {uuid generated earlier}
+inject_password = false
+inject_key = false
+inject_partition = -2
+live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
+hw_disk_discard = unmap
+
+Edit /etc/ceph/ceph.conf
+[global]
+fsid = cecf0410-4fef-447a-a327-6a87220ea865
+mon_initial_members = mon
+mon_host = 10.0.0.20
+auth_cluster_required = cephx
+auth_service_required = cephx
+auth_client_required = cephx
+osd pool default size = 2
+public network = 10.0.0.0/16
+
+[client]
+    rbd cache = true
+    rbd cache writethrough until flush = true
+    admin socket = /var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok
+    log file = /var/log/qemu/qemu-guest-$pid.log
+    rbd concurrent management ops = 20
+    
+# mkdir -p /var/run/ceph/guests/ /var/log/qemu/
+# chown qemu:libvirt /var/run/ceph/guests /var/log/qemu/
+# systemctl restart openstack-nova-compute.service
+
