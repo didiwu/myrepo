@@ -139,3 +139,4 @@ public network = 10.0.0.0/16
 # chown qemu:libvirt /var/run/ceph/guests /var/log/qemu/
 # systemctl restart openstack-nova-compute.service
 
+*** MAKE SURE ALL CEPH PACKAGES (LIBRBD1, ETC.) HAVE THE SAME VERSIONS ACROSS ALL OPENSTACK NODES ***
