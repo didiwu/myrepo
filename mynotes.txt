@@ -137,7 +137,7 @@ storage1:/glance        /var/lib/glance/images  glusterfs       defaults,_netdev
 # systemctl start openstack-glance-registry.service
 
 Download an image and upload it to glance:
-# glance image-create --property name=centos7 --property --visibility=public --container-format bare --disk-format qcow2 < CentOS-7-x86_64-GenericCloud.qcow2
+# glance image-create --property name=centos7 --visibility=public --container-format bare --disk-format qcow2 < CentOS-7-x86_64-GenericCloud.qcow2
 
 + Live migration
 # nova-manage service list
