@@ -89,10 +89,12 @@ $ ceph-deploy disk zap osd2:vdc
 $ ceph-deploy disk zap osd2:vdd
 $ ceph-deploy disk zap osd2:vde
 
-Due to some ceph bug, we have to manually change the ownership of the journal disk on each OSD nodes:
+Due to some ceph bug, we have to manually change the ownership of the journal disk on each OSD nodes and add the following udev rule:
 # chown ceph /dev/vdb1
 # chown ceph /dev/vdb2
 # chown ceph /dev/vdb3
+# cat /etc/udev/rules.d/10-local.rules
+KERNEL=="vdb*", OWNER="ceph" GROUP="disk", MODE="0660"
 
 + Create OSDs on osd nodes
 $ ceph-deploy osd create osd1:vdc:/dev/vdb1 osd1:vdd:/dev/vdb2 osd1:vde:/dev/vdb3
@@ -110,3 +112,8 @@ $ ceph osd pool get rbd pg_num
 $ ceph osd pool set rbd pg_num 192
 $ ceph osd pool set rbd pgp_num 192
 $ ceph -w
+
++ Addition steps (if required)
+I've also found that the ceph mon service on the monitor node is not started up automatically. Do the following to enable auto start-up:
+# systemctl enable ceph-mon.target
+
