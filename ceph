@@ -103,7 +103,7 @@ $ ceph-deploy osd create osd2:vdc:/dev/vdb1 osd2:vdd:/dev/vdb2 osd2:vde:/dev/vdb
 
 + Copy the ceph.client.admin.keyring to /etc/ceph
 $ sudo cp ceph.client.admin.keyring /etc/ceph
-$ chmod 644 /etc/ceph/ceph.client.admin.keyring
+$ sudo chmod 644 /etc/ceph/ceph.client.admin.keyring
 
 + Check the ceph status and increase pg_num and pgp_num as necessary
 $ ceph status
