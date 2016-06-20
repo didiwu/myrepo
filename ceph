@@ -1,12 +1,13 @@
-+ Enable ceph repo and install ceph-deploy (controller/admin node)
++ Enable EPEL ceph repo and install ceph-deploy (controller/admin node)
+# yum install -y yum-utils && sudo yum-config-manager --add-repo https://dl.fedoraproject.org/pub/epel/7/x86_64/ && sudo yum install --nogpgcheck -y epel-release && sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 && sudo rm /etc/yum.repos.d/dl.fedoraproject.org*
 # cat /etc/yum.repos.d/ceph-deploy.repo
 [ceph-noarch]
 name=Ceph noarch packages
-baseurl=http://ceph.com/rpm-hammer/el7/noarch
+baseurl=http://download.ceph.com/rpm-jewel/el7/noarch
 enabled=1
 gpgcheck=1
 type=rpm-md
-gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
+gpgkey=https://download.ceph.com/keys/release.asc
 # yum -y install ceph-deploy
 
 + Enable NTP (all nodes)
