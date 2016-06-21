@@ -29,7 +29,7 @@ $ ceph auth get-or-create client.glance | sudo tee /etc/ceph/ceph.client.glance.
 $ sudo chown glance:glance /etc/ceph/ceph.client.glance.keyring
 $ ceph auth get-or-create client.cinder | sudo tee /etc/ceph/ceph.client.cinder.keyring
 $ sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
-$ ceph auth get-or-create client.cinder-backup | ssh sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+$ ceph auth get-or-create client.cinder-backup | sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
 $ sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
 
 Add the keyring file for client.cinder to compute nodes:
@@ -71,7 +71,7 @@ show_image_direct_url = True
 
 # for i in openstack-glance-api.service openstack-glance-registry.service; do systemctl restart $i; done
 
-+ Configure Cinder to use ceph
++ Configure Cinder to use ceph (on controller/cinder node)
 Edit /etc/cinder/cinder.conf
 
 [DEFAULT]
