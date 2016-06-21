@@ -18,7 +18,7 @@ gpgkey=https://download.ceph.com/keys/release.asc
 + Create ceph user and enable password-less login (all nodes)
 # useradd ceph
 # passwd ceph
-# echo "Defaults:ceph !requiretty\nceph ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ceph
+# echo "Defaults:ceph !requiretty\nceph ALL = (root) NOPASSWD:ALL" | tee /etc/sudoers.d/ceph
 # chmod 440 /etc/sudoers.d/ceph
 # su - ceph
 $ ssh-keygen
