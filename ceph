@@ -50,7 +50,7 @@ On osd nodes:
 SELINUX=disabled
 # setenforce 0
 
-+ Enable yum-plugin-priorities
++ Enable yum-plugin-priorities on controller/admin node
 # yum install -y yum-plugin-priorities
 
 + Create ceph cluster (run this as ceph on controller/admin node)
