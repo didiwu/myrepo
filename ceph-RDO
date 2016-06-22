@@ -9,7 +9,6 @@
 $ ceph osd pool create volumes 128
 $ ceph osd pool create images 128
 $ ceph osd pool create backups 128
-$ ceph osd pool create vms 128
 
 + Configure Openstack ceph clients 
 # cp ceph.conf /etc/ceph/
