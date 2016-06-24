@@ -1,3 +1,9 @@
+#!/bin/bash
+rm -rf /etc/chef/client.pem
+echo "node_name 'vm1'" >> /etc/chef/client.rb
+chef-client -N vm1 -o role["base"]
+
+
 #cloud-config
 users:
   - name: demo
