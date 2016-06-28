@@ -3,7 +3,7 @@
 # yum install -y centos-release-openstack-mitaka
 # yum update -y
 # yum install -y openstack-packstack
-# packstack --install-hosts=10.0.0.10,10.0.0.11,10.0.0.12 --nagios-install=n --provision-demo=n
+# packstack --install-hosts=10.0.0.10,10.0.0.11,10.0.0.12 --os-heat-install=y --nagios-install=n --provision-demo=n --os-neutron-ovs-bridge-mappings=extnet:br-ex --os-neutron-ml2-type-drivers=vxlan,flat
 
 + Create storage pools
 $ ceph osd pool create volumes 128
