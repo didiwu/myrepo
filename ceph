@@ -35,6 +35,8 @@ Host osd1
 Host osd2
    Hostname osd2
    User ceph
+
+$ chmod 400 .ssh/config
    
 + Enable firewall ports
 On mon node:
