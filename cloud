@@ -1,7 +1,8 @@
 #!/bin/bash
+_node_name="server-`ec2metadata --instance-id`"
 rm -rf /etc/chef/client.pem
-echo "node_name 'vm1'" >> /etc/chef/client.rb
-chef-client -N vm1 -o role["base"]
+echo "node_name '$_node_name'" >> /etc/chef/client.rb
+chef-client -N $_node_name -o role["base"]
 
 
 #cloud-config
