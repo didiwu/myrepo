@@ -32,8 +32,7 @@ NM_CONTROLLED=no
 
 + Install GlusterFS
 
-wget -P /etc/yum.repos.d/ http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
-rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install centos-release-gluster
 yum install glusterfs glusterfs-fuse glusterfs-server
 systemctl start glusterd.service
 
