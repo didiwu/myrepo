@@ -40,7 +40,6 @@ systemctl start glusterd.service
 + Prepare disks where the gluster volumes will reside and create gluster volumes
 
 pvcreate /dev/vdb1
-vgcreate -n vg_data /dev/vdb1
 vgcreate vg_data /dev/vdb1
 lvcreate -l +100%FREE -n lv_data vg_data
 mkfs.xfs /dev/mapper/vg_data-lv_data
