@@ -10,3 +10,12 @@ Upload ISO to glance:
 
 Boot from ISO:
 # nova boot --image <iso-image-name> --block-device source=blank,dest=volume,size=10,shutdown=preserve --nic net-id=<net-uuid> --flavor m2.small vm2
+
+Create floating ip and associate it to a vm:
+# openstack ip floating pool list
+# openstack ip floating create <pool-name>
+# openstack ip floating list
+# openstack ip floating add <ip> <vm-name>
+
+Get console log from a vm:
+# nova console-log <vm-name>
