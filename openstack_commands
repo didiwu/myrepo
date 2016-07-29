@@ -19,3 +19,7 @@ Create floating ip and associate it to a vm:
 
 Get console log from a vm:
 # nova console-log <vm-name>
+
+Change a volume name:
+# openstack volume list
+# openstack volume set --name <new-name> --description <new-description> <volume-id>
