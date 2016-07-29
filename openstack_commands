@@ -3,4 +3,7 @@ Boot from image and create a new volume out of it:
 # openstack flavor list
 # openstack network list
 # openstack image list
-# nova boot --flavor m2.small --block-device source=image,id=<image-id>,dest=volume,size=10,shutdown=PRESERVE,bootindex=0 --key-name <key-name> --nic net-id=<subnet-id> vm1
+# nova boot --flavor m2.small --block-device source=image,id=<image-id>,dest=volume,size=10,shutdown=PRESERVE,bootindex=0 --key-name <key-name> --nic net-id=<net-uuid> vm1
+
+Boot from ISO:
+# nova boot --image <iso-image-name> --block-device source=blank,dest=volume,size=10,shutdown=preserve --nic net-id=<net-uuid> --flavor m2.small vm2
