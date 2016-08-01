@@ -39,6 +39,32 @@ $ openstack baremetal configure boot
 $ openstack baremetal introspection bulk start
 Bounce each overcloud node to start the instrospection process.
 
+Create nova flavors
+$ openstack flavor delete control
+$ openstack flavor delete compute
+$ openstack flavor create --id auto --ram 8192 --disk 79 --vcpus 4 --swap 2048 control
+$ openstack flavor create --id auto --ram 8192 --disk 79 --vcpus 4 --swap 2048 compute
+$ openstack flavor set --property "cpu_arch"="x86_64" --property "capabilities:boot_option"="local" --property "capabilities:profile"="control" control
+$ openstack flavor set --property "cpu_arch"="x86_64" --property "capabilities:boot_option"="local" --property "capabilities:profile"="compute" compute
 
+Update overcloud nodes profile
+$ ironic node-update <node-uuid> add properties/capabilities='profile:control,boot_option:local'
+$ ironic node-update <node-uuid> add properties/capabilities='profile:compute,boot_option:local'
 
-openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-templates --control-scale 1 --compute-scale 2 --ceph-storage-scale 2 --neutron-tunnel-types vxlan --neutron-network-type vxlan --control-flavor control --compute-flavor compute --ceph-storage-flavor ceph-storage -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e ~/templates/network-environment.yaml -e ~/templates/storage-environment.yaml -e ~/templates/firstboot/firstboot.yaml
+Build the overcloud
+$ mkdir templates
+$ vi templates/network-environment.yaml
+$ mkdir templates/nic-configs
+$ cp /usr/share/openstack-tripleo-heat-templates/network/config/bond-with-vlans/* templates/nic-configs/
+$ cp ./templates/nic-configs/controller.yaml ./templates/nic-configs/controller.yaml.orig
+$ vi templates/nic-configs/controller.yaml
+$ mkdir templates/firstboot
+$ vi templates/firstboot/firstboot.yaml
+$ vi templates/firstboot/userdata.yaml
+
+Deploy the overcloud
+With 3 controllers
+$ openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-templates --control-scale 3 --compute-scale 2 --neutron-tunnel-types vxlan --neutron-network-type vxlan --control-flavor control --compute-flavor compute --ntp-server 0.centos.pool.ntp.org -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e ~/templates/network-environment.yaml -e ~/templates/firstboot/firstboot.yaml 
+
+With 1 controller, 2 computes and 2 ceph nodes
+$ openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-templates --control-scale 1 --compute-scale 2 --ceph-storage-scale 2 --neutron-tunnel-types vxlan --neutron-network-type vxlan --control-flavor control --compute-flavor compute --ceph-storage-flavor ceph-storage -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e ~/templates/network-environment.yaml -e ~/templates/storage-environment.yaml -e ~/templates/firstboot/firstboot.yaml
