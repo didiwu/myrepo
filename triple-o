@@ -8,7 +8,7 @@ Update hosts file
 # echo "172.16.0.10 undercloud.localdomain undercloud" >> /etc/hosts
 
 Install the tripleoclient
-# yum install -y http://rdoproject.org/repos/openstack-liberty/rdo-release-newton.rpm
+# yum install -y https://repos.fedorapeople.org/repos/openstack/openstack-newton/rdo-release-newton-0.noarch.rpm
 # yum install -y python-tripleoclient
 
 Install undercloud
