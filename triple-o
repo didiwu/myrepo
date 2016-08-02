@@ -16,6 +16,10 @@ Install undercloud
 $ vi undercloud.conf
 $ openstack undercloud install
 
+Add DNS to undercloud network
+$ neutron subnet-list
+$ neutron subnet-update <network-id> --dns-nameserver 8.8.8.8
+
 Get and upload images
 $ . stackrc
 $ export NODE_DIST=centos7
