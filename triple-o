@@ -33,7 +33,7 @@ $ openstack overcloud image upload
 
 Enable fake_pxe driver on ironic
 $ sudo vi /etc/ironic/ironic.conf
-enabled_drivers = pxe_ipmitool,pxe_ssh,pxe_drac,pxe_ilo,pxe_wol,pxe_amt,fake_px
+enabled_drivers = pxe_ipmitool,pxe_ssh,pxe_drac,pxe_ilo,pxe_wol,pxe_amt,fake_pxe
 $ sudo systemctl restart openstack-ironic-conductor.service
 
 Register overcloud nodes
@@ -68,7 +68,7 @@ $ vi templates/firstboot/userdata.yaml
 
 Deploy the overcloud
 With 3 controllers
-$ openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-templates --control-scale 3 --compute-scale 2 --neutron-tunnel-types vxlan --neutron-network-type vxlan --control-flavor control --compute-flavor compute --ntp-server 0.centos.pool.ntp.org -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e ~/templates/network-environment.yaml -e ~/templates/firstboot/firstboot.yaml 
+$ openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-templates --control-scale 3 -e /usr/share/openstack-tripleo-heat-templates/environments/puppet-pacemaker.yaml --compute-scale 2 --neutron-tunnel-types vxlan --neutron-network-type vxlan --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e ~/templates/network-environment.yaml -e ~/templates/firstboot/firstboot.yaml 
 
 With 1 controller, 2 computes and 2 ceph nodes
 $ openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-templates --control-scale 1 --compute-scale 2 --ceph-storage-scale 2 --neutron-tunnel-types vxlan --neutron-network-type vxlan --control-flavor control --compute-flavor compute --ceph-storage-flavor ceph-storage -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e ~/templates/network-environment.yaml -e ~/templates/storage-environment.yaml -e ~/templates/firstboot/firstboot.yaml
