@@ -17,6 +17,7 @@ $ vi undercloud.conf
 $ openstack undercloud install
 
 Add DNS to undercloud network
+$ . stackrc
 $ neutron subnet-list
 $ neutron subnet-update <network-id> --dns-nameserver 8.8.8.8
 
