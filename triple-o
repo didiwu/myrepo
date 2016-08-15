@@ -58,6 +58,7 @@ $ openstack flavor set --property "cpu_arch"="x86_64" --property "capabilities:b
 Update overcloud nodes profile
 $ ironic node-update <node-uuid> add properties/capabilities='profile:control,boot_option:local'
 $ ironic node-update <node-uuid> add properties/capabilities='profile:compute,boot_option:local'
+$ ironic node-update <node-uuid> add properties/capabilities='profile:ceph-storage,boot_option:local'
 
 Build the overcloud
 $ mkdir templates
