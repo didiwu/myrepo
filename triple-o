@@ -47,10 +47,13 @@ Bounce each overcloud node to start the instrospection process.
 Create nova flavors
 $ openstack flavor delete control
 $ openstack flavor delete compute
+$ openstack flavor delete ceph-storage
 $ openstack flavor create --id auto --ram 8192 --disk 79 --vcpus 4 --swap 2048 control
 $ openstack flavor create --id auto --ram 8192 --disk 79 --vcpus 4 --swap 2048 compute
+$ openstack flavor create --id auto --ram 8192 --disk 79 --vcpus 4 --swap 2048 ceph-storage
 $ openstack flavor set --property "cpu_arch"="x86_64" --property "capabilities:boot_option"="local" --property "capabilities:profile"="control" control
 $ openstack flavor set --property "cpu_arch"="x86_64" --property "capabilities:boot_option"="local" --property "capabilities:profile"="compute" compute
+$ openstack flavor set --property "cpu_arch"="x86_64" --property "capabilities:boot_option"="local" --property "capabilities:profile"="ceph-storage" ceph-storage
 
 Update overcloud nodes profile
 $ ironic node-update <node-uuid> add properties/capabilities='profile:control,boot_option:local'
