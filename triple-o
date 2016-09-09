@@ -44,6 +44,12 @@ $ openstack baremetal configure boot
 $ openstack baremetal introspection bulk start
 Bounce each overcloud node to start the instrospection process.
 
+For Newton:
+$ ironic node-set-provision-state <uuid> manage
+$ openstack baremetal introspection start <uuid>
+$ openstack baremetal introspection status <uuid>
+$ ironic node-set-provision-state <uuid> provide
+
 Create nova flavors
 $ openstack flavor delete control
 $ openstack flavor delete compute
