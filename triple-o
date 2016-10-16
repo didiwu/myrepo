@@ -41,10 +41,12 @@ Register overcloud nodes
 $ vi instackenv.json
 $ openstack baremetal import --json instackenv.json
 $ openstack baremetal configure boot
+
+Inspect all nodes
 $ openstack baremetal introspection bulk start
 Bounce each overcloud node to start the instrospection process.
 
-For Newton:
+Inspect single node
 $ ironic node-set-provision-state <uuid> manage
 $ openstack baremetal introspection start <uuid>
 $ openstack baremetal introspection status <uuid>
