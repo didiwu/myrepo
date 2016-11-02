@@ -1,0 +1,3 @@
+RDO packstack with LBaaS and Autoscaling
+
+# packstack --allinone --os-neutron-lbaas-install=y --os-heat-install=y --os-heat-cfn-install=y --nagios-install=n --provision-demo=n --os-neutron-ovs-bridge-mappings=extnet:br-ex --os-neutron-ml2-type-drivers=vxlan,flat
